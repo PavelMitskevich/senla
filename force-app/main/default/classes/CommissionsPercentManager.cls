@@ -2,7 +2,7 @@ public inherited sharing class CommissionsPercentManager {
 
     public class CommissionsPercentWrapper {
         
-        public Decimal comission {get; set;}
+        public String comission {get; set;}
         public Id dealId {get; set;}
         public Id brokerId {get; set;}
     }
@@ -11,7 +11,7 @@ public inherited sharing class CommissionsPercentManager {
         
         Commissions_Percent__c commissionsPercent = new Commissions_Percent__c();
 
-        commissionsPercent.Commission__c = wrapper.comission;
+        commissionsPercent.Commission__c = Decimal.valueOf(wrapper.comission);
         commissionsPercent.Commission_Deal__c = wrapper.dealId;
         commissionsPercent.Commission_Broker__c = wrapper.brokerId;
 
