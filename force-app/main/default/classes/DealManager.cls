@@ -6,8 +6,8 @@ public inherited sharing class DealManager {
 
     public class DealWrapper {
         public String property {get; set;}
-        public String buyer {get; set;}
-        public String seller {get; set;}
+        public Id buyer {get; set;}
+        public Id seller {get; set;}
         public String status {get; set;}
         public String recordType {get; set;}
     }
@@ -29,7 +29,7 @@ public inherited sharing class DealManager {
         return Database.query('SELECT ' + fields + ' FROM Deal__c WHERE Id IN :ids');
     }
 
-    public static List<Contact> getDealsByStatuses(List<String> statuses, String fields) {
+    public static List<Deal__c> getDealsByStatuses(List<String> statuses, String fields) {
         return Database.query('SELECT ' + fields + ' FROM Deal__c WHERE Status__c IN :statuses');
     }
 
