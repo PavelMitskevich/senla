@@ -17,7 +17,7 @@ public inherited sharing class DealManager {
         deal.Buyer__c = wrapper.buyer;
         deal.Seller__c = wrapper.seller;
         deal.Property__c = wrapper.property;
-        deal.RecordType = (String.isNotBlank(wrapper.recordType)) ? wrapper.recordType : DEFAULT_TYPE;
+        deal.RecordType.Name = (String.isNotBlank(wrapper.recordType)) ? wrapper.recordType : DEFAULT_RECORD_TYPE;
         deal.Status__c = String.isNotBlank(wrapper.status) ? wrapper.status : DEFAULT_STATUS;
 
         if (serialize) insert deal;
@@ -41,8 +41,8 @@ public inherited sharing class DealManager {
             deal.Buyer__c = wrapper.buyer;
             deal.Seller__c = wrapper.seller;
             deal.Property__c = wrapper.property;
-            deal.RecordType = (String.isNotBlank(wrapper.recordType)) ? wrapper.recordType : DEFAULT_TYPE;
-            deal.Status__c = String.isNotBlank(wrapper.status) ? wrapper.status : DEFAULT_STATUS;
+            deal.RecordType.Name = (String.isNotBlank(wrapper.recordType)) ? wrapper.recordType : DEFAULT_RECORD_TYPE;
+            deal.Status__c = (String.isNotBlank(wrapper.status)) ? wrapper.status : DEFAULT_STATUS;
             updatedDealsList.add(deal);
         }
 
