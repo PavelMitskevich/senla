@@ -5,8 +5,7 @@ public inherited sharing class ContactManager {
     public class ContactWrapper {
         public String firstName {get; set;}
         public String lastName {get; set;}
-        public String lastName{get; set}
-        public String phone {get; set}
+        public String phone {get; set;}
         public String recordType {get; set;}
         public String email {get; set;}
     }
@@ -17,7 +16,7 @@ public inherited sharing class ContactManager {
         contact.LastName = wrapper.lastName;
         contact.Phone = wrapper.phone;
         contact.Email = wrapper.email;
-        contact.RecordType = (String.isNotBlank(wrapper.recordType)) ? wrapper.recordType : DEFAULT_TYPE;
+        contact.RecordType.Name = (String.isNotBlank(wrapper.recordType)) ? wrapper.recordType : DEFAULT_RECORD_TYPE;
         
         if (serialize) insert contact;
 
@@ -29,20 +28,20 @@ public inherited sharing class ContactManager {
         return Database.query('SELECT ' + fields + ' FROM Contact WHERE Id IN :ids');
     }
 
-    public static List<Contact> getContactsByRecordTypes(List<Id> recordTypes, String fields) {
+    public static List<Contact> getContactsByRecordType(String recordType, String fields) {
 
-        return Database.query('SELECT ' + fields + ' FROM Contact WHERE RecordTypeId IN :recordTypes');
+        return Database.query('SELECT ' + fields + ' FROM Contact WHERE RecordTypeId IN :recordType');
     }
 
     public static List<Contact> updateContactsByIds(List<Id> ids, ContactWrapper wrapper, Boolean serialize) {
 
-        List<Contact> contactsList = [SELECT First_Name__c, Last_Name__c, RecordTypeId, Phone, Email FROM Contact WHERE Id IN :ids];
+        List<Contact> contactsList = [SELECT FirstName, LastName, RecordTypeId, Phone, Email FROM Contact WHERE Id IN :ids];
         List<Contact> updatedContactsList = new List<Contact>();
 
         for (Contact contact : contactsList) {
             contact.FirstName = wrapper.firstName;
             contact.LastName = wrapper.lastName;
-            contact.RecordType = (String.isNotBlank(wrapper.recordType)) ? wrapper.recordType : DEFAULT_TYPE;
+            contact.RecordType.Name = (String.isNotBlank(wrapper.recordType)) ? wrapper.recordType : DEFAULT_RECORD_TYPE;
             contact.Phone = wrapper.phone;
             contact.Email = wrapper.email;
             updatedContactsList.add(contact);
@@ -53,7 +52,7 @@ public inherited sharing class ContactManager {
         return updatedContactsList;
     }
 
-    public static void deleteContactsByIds(List<String> phones) {
+    public static void deleteContactsByPhones(List<String> phones) {
 
             delete [SELECT Id FROM Contact WHERE Phone IN :phones];
     }
@@ -63,6 +62,5 @@ public inherited sharing class ContactManager {
 
         delete [SELECT Id FROM Contact WHERE RecordType.Name IN :recordTypes];
     }
-
 
 }
