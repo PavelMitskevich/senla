@@ -29,9 +29,15 @@ public with sharing class TestDataFactory {
         return log;
     }
 
-    public static Deal__c createDeal(Property__c property, Buyer__c buyer, Seller__c seller) {
+    public static Deal__c createDeal() {
+        
+        Contact buyer = TestDataFactory.createContact('Buyer First Name', 'Buyer Last Name');
+        
+        Contact seller = TestDataFactory.createContact('Seller First Name', 'Seller Last Name');
+        
+        Property__c property = TestDataFactory.createProperty('Kupala str.');
 
-        Deal__c deal = new Deal__c(Property__c = property, Buyer__c= buyer, Seller__c = seller);
+        Deal__c deal = new Deal__c(Property__c = property.Id, Buyer__c= buyer.Id, Seller__c = seller.Id);
 
         insert deal;
         return deal;
@@ -54,9 +60,11 @@ public with sharing class TestDataFactory {
         }
     }
 
-    public static Property__c createProperty(String address, Owner__c owner) {
+    public static Property__c createProperty(String address) {
+        
+        Contact owner = TestDataFactory.createContact('Seller First Name', 'Seller Last Name');
 
-        Property__c property = new Property__c(Address__c = address, Owner__c = owner);
+        Property__c property = new Property__c(Address__c = address, Owner__c = owner.Id);
 
         insert property;
         return property;
