@@ -19,7 +19,13 @@ public inherited sharing class PropertyManager {
         property.Rental__c = wrapper.rentPrice;
         property.Selling_Price__c = wrapper.sellingPrice;
         property.Owner__c = wrapper.propertyOwner;
-        property.RecordType = (String.isNotBlank(wrapper.recordType)) ? wrapper.recordType : DEFAULT_TYPE;
+        if(wrapper.recordType == 'Property Owner' || wrapper.recordType == null){
+            property.RecordType = [SELECT id FROM RecordType WHERE Name = 'Industrial'];
+        } else if (wrapper.recordType == 'Broker') {
+            property.RecordType = [SELECT id FROM RecordType WHERE Name = 'Office'];
+        } else if (wrapper.recordType == 'Customer') {
+            property.RecordType = [SELECT id FROM RecordType WHERE Name = 'Space'];
+        }        
 
         if(serialize) insert property;
 
@@ -30,25 +36,26 @@ public inherited sharing class PropertyManager {
 
         return Database.query('SELECT ' + fields + ' FROM Property__c WHERE Id IN :ids');
     }
+    
+    public static Property__c getPropertyById(Id idProp, String fields) {
 
-    public static List<Property__c> getPropertiesBySoldPrices(List<Decimal> soldPrices, String fields) {
-
-        return Database.query('SELECT ' + fields + ' FROM Property__c WHERE Sold_Price__c IN :soldPrices');
+        return Database.query('SELECT ' + fields + ' FROM Property__c WHERE Id = :idProp');
     }
 
-    public static List<Property__c> updateContactsByIds(List<Id> ids, PropertyWrapper wrapper, Boolean serialize) {
+    public static List<Property__c> getPropertiesBySellingPrices(List<Decimal> sellingPrices, String fields) {
 
-        List<Property__c> propertiesList =
-            [SELECT Address__c, Rental__c, Selling_Price__c, Owner__c FROM Property__c WHERE Id IN :ids];
+        return Database.query('SELECT ' + fields + ' FROM Property__c WHERE Selling_Price__c IN :sellingPrices');
+    }
 
+    public static List<Property__c> updatePropertiesByIds(List<Id> ids, PropertyWrapper wrapper, Boolean serialize) {
+
+        List<Property__c> propertiesList = [SELECT Address__c, Rental__c, Selling_Price__c, Owner__c FROM Property__c WHERE Id IN :ids];
         List<Property__c> updatedPropertiesList = new List<Property__c>();
 
-        for (Property__c property : updatedPropertiesList) {
+        for (Property__c property : propertiesList) {
             property.Address__c = wrapper.address;
             property.Rental__c = wrapper.rentPrice;
             property.Selling_Price__c = wrapper.sellingPrice;
-            property.Owner__c = wrapper.propertyOwner;
-            property.RecordType = (String.isNotBlank(wrapper.recordType)) ? wrapper.recordType : DEFAULT_TYPE;
             updatedPropertiesList.add(property);
         }
 

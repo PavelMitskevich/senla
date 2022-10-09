@@ -5,7 +5,7 @@ public inherited sharing class DealManager {
     public static final String DEFAULT_STATUS = 'Awaiting Approval';
 
     public class DealWrapper {
-        public String property {get; set;}
+        public Id property {get; set;}
         public Id buyer {get; set;}
         public Id seller {get; set;}
         public String status {get; set;}
@@ -14,10 +14,15 @@ public inherited sharing class DealManager {
 
     public static Deal__c createDeal(DealWrapper wrapper, Boolean serialize) {
         Deal__c deal = new Deal__c();
-        deal.Buyer__c = wrapper.buyer;
-        deal.Seller__c = wrapper.seller;
+        Property__c prop = PropertyManager.getPropertyById(wrapper.property, 'Owner__c');
+        deal.Seller__c = prop.Owner__c;
+        deal.Buyer__c = wrapper.buyer;     
         deal.Property__c = wrapper.property;
-        deal.RecordType.Name = (String.isNotBlank(wrapper.recordType)) ? wrapper.recordType : DEFAULT_RECORD_TYPE;
+        if(wrapper.recordType == 'Sale' || wrapper.recordType == null){
+            deal.RecordType = [SELECT id FROM RecordType WHERE Name = 'Sale'];
+        } else if (wrapper.recordType == 'Lease') {
+            deal.RecordType = [SELECT id FROM RecordType WHERE Name = 'Lease'];
+        }
         deal.Status__c = String.isNotBlank(wrapper.status) ? wrapper.status : DEFAULT_STATUS;
 
         if (serialize) insert deal;
@@ -29,8 +34,8 @@ public inherited sharing class DealManager {
         return Database.query('SELECT ' + fields + ' FROM Deal__c WHERE Id IN :ids');
     }
 
-    public static List<Deal__c> getDealsByStatuses(List<String> statuses, String fields) {
-        return Database.query('SELECT ' + fields + ' FROM Deal__c WHERE Status__c IN :statuses');
+    public static List<Deal__c> getDealsByStatus(String status, String fields) {
+        return Database.query('SELECT ' + fields + ' FROM Deal__c WHERE Status__c = :status');
     }
 
     public static List<Deal__c> updateDealsByIds(List<Id> ids, DealWrapper wrapper, Boolean serialize) {
@@ -41,7 +46,6 @@ public inherited sharing class DealManager {
             deal.Buyer__c = wrapper.buyer;
             deal.Seller__c = wrapper.seller;
             deal.Property__c = wrapper.property;
-            deal.RecordType.Name = (String.isNotBlank(wrapper.recordType)) ? wrapper.recordType : DEFAULT_RECORD_TYPE;
             deal.Status__c = (String.isNotBlank(wrapper.status)) ? wrapper.status : DEFAULT_STATUS;
             updatedDealsList.add(deal);
         }
@@ -51,7 +55,7 @@ public inherited sharing class DealManager {
         return updatedDealsList;
     }
 
-    public static void deleteDealsByStatus(List<String> statuses) {
-        delete [SElECT Id FROM Deal__c WHERE Status__c IN :statuses];
+    public static void deleteDealsByStatus(String status) {
+        delete [SElECT Id FROM Deal__c WHERE Status__c = :status];
     }
 }
