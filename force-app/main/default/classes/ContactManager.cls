@@ -16,8 +16,14 @@ public inherited sharing class ContactManager {
         contact.LastName = wrapper.lastName;
         contact.Phone = wrapper.phone;
         contact.Email = wrapper.email;
-        contact.RecordType.Name = (String.isNotBlank(wrapper.recordType)) ? wrapper.recordType : DEFAULT_RECORD_TYPE;
-        
+        if(wrapper.recordType == 'Property Owner' || wrapper.recordType == null){
+            contact.RecordType = [SELECT id FROM RecordType WHERE Name = 'Property Owner'];
+        } else if (wrapper.recordType == 'Broker') {
+            contact.RecordType = [SELECT id FROM RecordType WHERE Name = 'Broker'];
+        } else if (wrapper.recordType == 'Customer') {
+            contact.RecordType = [SELECT id FROM RecordType WHERE Name = 'Customer'];
+        }
+  
         if (serialize) insert contact;
 
         return contact;
@@ -30,18 +36,17 @@ public inherited sharing class ContactManager {
 
     public static List<Contact> getContactsByRecordType(String recordType, String fields) {
 
-        return Database.query('SELECT ' + fields + ' FROM Contact WHERE RecordTypeId IN :recordType');
+        return Database.query('SELECT ' + fields + ' FROM Contact WHERE RecordType.Name = :recordType');
     }
 
     public static List<Contact> updateContactsByIds(List<Id> ids, ContactWrapper wrapper, Boolean serialize) {
 
-        List<Contact> contactsList = [SELECT FirstName, LastName, RecordTypeId, Phone, Email FROM Contact WHERE Id IN :ids];
+        List<Contact> contactsList = [SELECT FirstName, LastName, Phone, Email FROM Contact WHERE Id IN :ids];
         List<Contact> updatedContactsList = new List<Contact>();
 
         for (Contact contact : contactsList) {
             contact.FirstName = wrapper.firstName;
             contact.LastName = wrapper.lastName;
-            contact.RecordType.Name = (String.isNotBlank(wrapper.recordType)) ? wrapper.recordType : DEFAULT_RECORD_TYPE;
             contact.Phone = wrapper.phone;
             contact.Email = wrapper.email;
             updatedContactsList.add(contact);
@@ -62,5 +67,4 @@ public inherited sharing class ContactManager {
 
         delete [SELECT Id FROM Contact WHERE RecordType.Name IN :recordTypes];
     }
-
 }

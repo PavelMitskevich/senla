@@ -15,12 +15,12 @@ public inherited sharing class LogManager {
 
         return log;
     }
-
-        public static List<Log__c> getLogsByIds(List<Id> ids, String fields) {
+    
+    public static List<Log__c> getLogsByIds(List<Id> ids, String fields) {
         return Database.query('SELECT ' + fields + ' FROM Log__c WHERE Id IN :ids');
     }
 
-    public static List<Log__c> getLogsByTypes(List<Type> types, String fields) {
+    public static List<Log__c> getLogsByTypes(List<String> types, String fields) {
         return Database.query('SELECT ' + fields + ' FROM Log__c WHERE Type__c IN :types');
     }
 
@@ -50,7 +50,7 @@ public inherited sharing class LogManager {
         return logToUpdate;
     }
 
-    public static void deleteLogsByIds(List<String> types) {
+    public static void deleteLogsByTypes(List<String> types) {
         delete [SELECT Id FROM Log__c WHERE Type__c IN :types];
     }
 }
