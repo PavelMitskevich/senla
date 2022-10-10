@@ -4,6 +4,8 @@ public inherited sharing class DealManager {
 
     public static final String DEFAULT_STATUS = 'Awaiting Approval';
 
+    public static final Id SALE_RECORD_TYPE_ID = '0125i000000xyM8AAI';
+
     public class DealWrapper {
         public Id property {get; set;}
         public Id buyer {get; set;}
@@ -57,5 +59,15 @@ public inherited sharing class DealManager {
 
     public static void deleteDealsByStatus(String status) {
         delete [SElECT Id FROM Deal__c WHERE Status__c = :status];
+    }
+
+    public static List<Deal__c> getNotClosedSaleDealsByProperties(List<Id> propertyIds) {
+    return [
+            SELECT Id
+            FROM Deal__c
+            WHERE Property__c IN :propertyIds
+            AND Status__c NOT IN ('Closed Won', 'Closed', 'Closed Lost')
+            AND RecordTypeId = :SALE_RECORD_TYPE_ID
+    ];
     }
 }
